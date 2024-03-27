@@ -46,9 +46,11 @@ export default function TransactionsTable() {
 						<TableCell>
 							{Object.entries(transaction.banknotes)
 								.map(
-									([denomination, count]) =>
-										`${denomination} x ${count}`
-								)
+									([denomination, count]) => {
+										if (count === 0) return "";
+										return `${denomination} x ${Math.abs(count)}`
+									}
+								).filter(str => str)
 								.join(", ") || transaction.customAmount}
 						</TableCell>
 						<TableCell className="text-right">{
