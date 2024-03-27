@@ -14,15 +14,12 @@ import useFirebaseTransactions from "@/hooks/useFirebaseTransactions";
 import { useEffect, useState } from "react";
 
 export default function TransactionsTable() {
-	const { getUserTransactions } = useFirebaseTransactions("user");
-    const [transactions, setTransactions] = useState<Transaction[]>([]);
+	const { transactions } = useFirebaseTransactions("user");
 	
     useEffect(() => {
         console.log("Fetching transactions...");
-        getUserTransactions().then((transactions) => {
-            setTransactions(transactions.sort((a, b) => a.timestamp - b.timestamp));
-        });
-    }, []);
+		console.log(transactions);
+    }, [transactions]);
 
 
 	return (
@@ -38,7 +35,7 @@ export default function TransactionsTable() {
 				</TableRow>
 			</TableHeader>
 			<TableBody>
-				{transactions.map((transaction: Transaction) => (
+				{transactions.map((transaction, i) => (
 					<TableRow key={transaction.id}>
 						<TableCell>
 							{new Date(transaction.timestamp).toLocaleString()}
@@ -54,19 +51,15 @@ export default function TransactionsTable() {
 								)
 								.join(", ") || transaction.customAmount}
 						</TableCell>
-						<TableCell className="text-right">{transaction.totalAmount}</TableCell>
-						<TableCell className="text-right">
+						<TableCell className="text-right">{
+							(transaction.totalAmount > 0 ? "+" : "") +
+							transaction.totalAmount}</TableCell>
+						<TableCell className={`text-right ${i === transactions.length-1 ? "font-bold" : ""}`}>
 							{transaction.balance}
 						</TableCell>
 					</TableRow>
 				))}
 			</TableBody>
-			<TableFooter>
-				<TableRow>
-					<TableCell colSpan={4}>Total</TableCell>
-					<TableCell className="text-right">{transactions[transactions.length-1]?.balance} PLN</TableCell>
-				</TableRow>
-			</TableFooter>
 		</Table>
 	);
 }
